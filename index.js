@@ -18,7 +18,7 @@
 const express = require('express');
 const timer = require('timers');
 
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 3000;
 
 const app = express()
     .use(express.urlencoded({extended: false}))
@@ -80,7 +80,7 @@ app.post('/', (req, res) => {
   return res.json({text});
 });
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT || 3000, () => {
   let count = 0;
   timer.setInterval(function() {
       postMessage(count += 1);
