@@ -125,6 +125,7 @@ app.post('/', async (req, res) => {
   // Case 3: Texting the BOT
   } else if (req.body.type === 'MESSAGE') {
     const message = event.message;
+    if (message.includes('/start_poll')) {
     if (message.slashCommand?.commandId === '1') {
       reply = showConfigurationForm(event);
       return res.json(reply)
