@@ -19,6 +19,7 @@ const express = require('express');
 const timer = require('timers');
 const bodyParser = require('body-parser');
 const { google } = require('googleapis');
+const { buildConfigurationForm, MAX_NUM_OF_OPTIONS } = require('./config-form');
 
 const PORT = process.env.PORT || 3000;
 
@@ -66,8 +67,54 @@ function postMessage(count) {
   });
 }
 
-app.post('/', (req, res) => {
+/**
+ * Handles the slash command to display the config form.
+ *
+ * @param {object} event - chat event
+ * @returns {object} Response to send back to Chat
+ */
+ function showConfigurationForm(event) {
+  // Seed the topic with any text after the slash command
+  const topic = event.message?.argumentText?.trim();
+  const dialog = buildConfigurationForm({
+    topic,
+    choices: [],
+  });
+  return {
+    actionResponse: {
+      type: 'DIALOG',
+      dialogAction: {
+        dialog: {
+          body: dialog,
+        },
+      },
+    },
+  };
+}
+/**
+ * Handle the custom start_poll action.
+ *
+ * @param {object} event - chat event
+ * @returns {object} Response to send back to Chat
+ */
+function startPoll(event) {
+  // Not fully implemented yet -- just close the dialog
+  return {
+    actionResponse: {
+      type: 'DIALOG',
+      dialogAction: {
+        actionStatus: {
+          statusCode: 'OK',
+          userFacingMessage: 'Poll started.',
+        },
+      },
+    },
+  };
+}
+
+app.post('/', async (req, res) => {
   let text = ' ';
+  let event = req.body
   // Case 1: When BOT was added to the ROOM
   if (req.body.type === 'ADDED_TO_SPACE' && req.body.space.type === 'ROOM') {
     text = `Thanks for adding me to ${req.body.space.displayName}`;
@@ -77,7 +124,16 @@ app.post('/', (req, res) => {
     text = `Thanks for adding me to a DM, ${req.body.user.displayName}`;
   // Case 3: Texting the BOT
   } else if (req.body.type === 'MESSAGE') {
-    text = `Your message : ${req.body.message.text}`;
+    const message = event.message;
+    if (message.slashCommand?.commandId === '1') {
+      reply = showConfigurationForm(event);
+      return res.json(reply)
+    }
+  } else if (event.type === 'CARD_CLICKED') {
+    if (event.action?.actionMethodName === 'start_poll') {
+      reply = await startPoll(event);
+      return res.json(reply)
+    }
   }
   return res.json({text});
 });
