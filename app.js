@@ -65,7 +65,7 @@ function postMessage(count) {
 }
 
 app.post('/', (req, res) => {
-  let text = '';
+  let text = ' ';
   // Case 1: When BOT was added to the ROOM
   if (req.body.type === 'ADDED_TO_SPACE' && req.body.space.type === 'ROOM') {
     text = `Thanks for adding me to ${req.body.space.displayName}`;
