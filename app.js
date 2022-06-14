@@ -17,12 +17,14 @@
  const unirest = require('unirest');
 const express = require('express');
 const timer = require('timers');
+const bodyParser = require('body-parser');
+const { google } = require('googleapis');
 
 const PORT = process.env.PORT || 3000;
 
-const app = express()
-    .use(express.urlencoded({extended: false}))
-    .use(express.json());
+const app = express().use(bodyParser.urlencoded({
+  extended: false
+})).use(bodyParser.json());
 
 function getJWT() {
   return new Promise(function(resolve, reject) {
