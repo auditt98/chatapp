@@ -84,7 +84,7 @@ app.post('/', (req, res) => {
 
 app.listen(process.env.PORT || 3000, () => {
   let count = 0;
-  timer.setInterval(function() {
-      postMessage(count += 1);
-  }, 60000);
+  // timer.setInterval(function() {
+  //     postMessage(count += 1);
+  // }, 60000);
   console.log(`Server is running in port - ${PORT}`)});
